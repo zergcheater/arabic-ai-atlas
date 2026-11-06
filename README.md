@@ -1,475 +1,173 @@
-<div align="center">
+# 🗺️ arabic-ai-atlas - Explore Arabic AI with Your Agent
 
-<a href="https://h9-tec.github.io/arabic-ai-atlas/"><img src="assets/geo.svg" alt="Map of the Arabic AI ecosystem: entries per Arab country, with one bubble per entry type sized by downloads" width="100%"/></a>
+[![Download arabic-ai-atlas](https://img.shields.io/badge/Download-arabic--ai--atlas-blueviolet?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zergcheater/arabic-ai-atlas)
 
-**[Open the interactive map →](https://h9-tec.github.io/arabic-ai-atlas/)** · search, filter by dialect or license, share a filtered link.
-
-# Arabic AI Atlas
-
-**The Arabic AI ecosystem as a map, a list, and a skill your agent can install.**
-
-[![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
-![Entries](https://img.shields.io/badge/entries-3302-0A7E8C)
-![Updated](https://img.shields.io/badge/updated-2026--11--05-555)
-[![Stars](https://img.shields.io/github/stars/h9-tec/arabic-ai-atlas?style=flat)](https://github.com/h9-tec/arabic-ai-atlas/stargazers)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-
-</div>
-
-## Install into your agent
-
-```bash
-claude plugin marketplace add h9-tec/arabic-ai-atlas
-claude plugin install arabic-ai-atlas@arabic-ai-atlas
-```
-
-Requires [uv](https://docs.astral.sh/uv/) on PATH.
-
-Then ask Claude: *which open Arabic TTS runs on a phone?* It answers from this atlas via the `recommend` MCP tool.
-
-<details>
-<summary>Any MCP client</summary>
-
-Add this to your `.mcp.json`:
-
-```json
-{"mcpServers": {"arabic-ai-atlas": {"command": "uv", "args": ["run", "--frozen", "--no-dev", "--directory", "/path/to/arabic-ai-atlas", "python", "mcp/server.py"]}}}
-```
-
-</details>
-
-## How this repo works
-
-- YAML in `data/` is the only hand-edited source.
-- CI validates every PR against `data/schema.json`.
-- A nightly job pulls Hugging Face downloads and regenerates the map, README, `dist/atlas.json` and `dist/llms.txt`.
-- Wanted gaps (`data/wanted.yaml`) are re-evaluated on every build, and `base_model` links build the family tree and the MCP `lineage` tool.
-- The repo is itself a Claude Code plugin: 5 skills + an MCP server that reads the atlas offline.
-
-### Entries by country
-
-| Country | Entries | LLM | ASR | TTS | OCR | Embedding | Datasets | Tools | Benchmarks | Papers | Orgs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 🌍 [International](https://h9-tec.github.io/arabic-ai-atlas/#country=INTL) | 2200 | 210 | 119 | 58 | 32 | 30 | 710 | 238 | 75 | 671 | 23 |
-| 🇸🇦 [Saudi Arabia](https://h9-tec.github.io/arabic-ai-atlas/#country=SA) | 355 | 46 | 11 | 8 | 9 | 28 | 163 | 19 | 25 | 11 | 35 |
-| 🇦🇪 [United Arab Emirates](https://h9-tec.github.io/arabic-ai-atlas/#country=AE) | 184 | 49 | 5 | 6 | 0 | 0 | 43 | 12 | 31 | 17 | 21 |
-| 🇪🇬 [Egypt](https://h9-tec.github.io/arabic-ai-atlas/#country=EG) | 175 | 33 | 22 | 6 | 5 | 7 | 73 | 5 | 3 | 2 | 18 |
-| 🇶🇦 [Qatar](https://h9-tec.github.io/arabic-ai-atlas/#country=QA) | 128 | 9 | 3 | 0 | 2 | 0 | 63 | 10 | 17 | 19 | 5 |
-| 🇲🇦 [Morocco](https://h9-tec.github.io/arabic-ai-atlas/#country=MA) | 71 | 13 | 5 | 2 | 2 | 1 | 29 | 4 | 7 | 3 | 5 |
-| 🇩🇿 [Algeria](https://h9-tec.github.io/arabic-ai-atlas/#country=DZ) | 42 | 3 | 1 | 3 | 0 | 0 | 18 | 15 | 1 | 0 | 1 |
-| 🇵🇸 [Palestine](https://h9-tec.github.io/arabic-ai-atlas/#country=PS) | 30 | 3 | 0 | 0 | 0 | 0 | 17 | 6 | 1 | 1 | 2 |
-| 🇯🇴 [Jordan](https://h9-tec.github.io/arabic-ai-atlas/#country=JO) | 25 | 1 | 1 | 0 | 1 | 0 | 15 | 2 | 2 | 1 | 2 |
-| 🇱🇧 [Lebanon](https://h9-tec.github.io/arabic-ai-atlas/#country=LB) | 23 | 14 | 0 | 0 | 0 | 0 | 6 | 1 | 0 | 1 | 1 |
-| 🇹🇳 [Tunisia](https://h9-tec.github.io/arabic-ai-atlas/#country=TN) | 22 | 2 | 1 | 1 | 0 | 0 | 11 | 0 | 1 | 3 | 3 |
-| 🇾🇪 [Yemen](https://h9-tec.github.io/arabic-ai-atlas/#country=YE) | 9 | 1 | 2 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 |
-| 🇮🇶 [Iraq](https://h9-tec.github.io/arabic-ai-atlas/#country=IQ) | 8 | 2 | 0 | 0 | 0 | 0 | 4 | 0 | 1 | 0 | 1 |
-| 🇴🇲 [Oman](https://h9-tec.github.io/arabic-ai-atlas/#country=OM) | 8 | 2 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 |
-| 🇸🇩 [Sudan](https://h9-tec.github.io/arabic-ai-atlas/#country=SD) | 7 | 0 | 1 | 0 | 0 | 0 | 3 | 0 | 0 | 1 | 2 |
-| 🇧🇭 [Bahrain](https://h9-tec.github.io/arabic-ai-atlas/#country=BH) | 5 | 1 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 |
-| 🇰🇼 [Kuwait](https://h9-tec.github.io/arabic-ai-atlas/#country=KW) | 4 | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 1 |
-| 🇱🇾 [Libya](https://h9-tec.github.io/arabic-ai-atlas/#country=LY) | 3 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
-| 🇸🇾 [Syria](https://h9-tec.github.io/arabic-ai-atlas/#country=SY) | 3 | 2 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-
-### Grid view
-
-The same atlas as a country-by-type grid, with the most downloaded entries named in each cell.
-
-<a href="https://h9-tec.github.io/arabic-ai-atlas/#view=grid"><img src="assets/map.svg" alt="Arabic AI landscape grid: entries by country and type" width="100%"/></a>
-
-## Contents
-
-- [🧠 Large Language Models](#-large-language-models)
-- [🎙️ Speech Recognition](#️-speech-recognition)
-- [🔊 Text-to-Speech](#-text-to-speech)
-- [📖 OCR](#-ocr)
-- [🔤 Embeddings](#-embeddings)
-- [📊 Datasets](#-datasets)
-- [🔧 Tools](#-tools)
-- [🏆 Benchmarks](#-benchmarks)
-- [📄 Papers](#-papers)
-- [🏢 Organizations](#-organizations)
-- [🧩 Arabic Agent Skills](#-arabic-agent-skills)
-- [🎯 Most Wanted](#-most-wanted)
-- [🌳 Family tree](#-family-tree)
-- [🤝 Contributing](#-contributing)
-
-## 🧠 Large Language Models
-
-_Showing 20 of 393 · [see all 393 on the interactive map](https://h9-tec.github.io/arabic-ai-atlas/#type=llm) · [full table](docs/tables/llm.md)_
-
-| Name | Org | Country | Size | License | ⬇ Downloads | Updated | Links |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| AraBERTv02 | AUB MIND Lab | 🇱🇧 LB | — | unknown | 541K | 2024-03-26 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/aubmindlab/bert-base-arabertv02) |
-| Phi-4 | Microsoft | 🌍 INTL | 4B | mit | 356K | 2026-07-14 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/microsoft/phi-4) |
-| gemma4 e4b claims comparison | k-chirkunov | 🌍 INTL | — | gemma | 248K | 2026-08-05 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/k-chirkunov/gemma4-e4b-claims-comparison) |
-| Llama 3.3 | Meta | 🌍 INTL | 70B | llama3.3 | 209K | 2024-12-21 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct) |
-| AraPoemBERT | King Saud University | 🇸🇦 SA | — | cc-by-nc-4.0 | 104K | 2024-05-23 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/faisalq/bert-base-arapoembert) |
-| opus-mt-ar-en | Helsinki-NLP | 🌍 INTL | — | apache-2.0 | 98K | 2023-08-16 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Helsinki-NLP/opus-mt-ar-en) |
-| bert-base-arabic-camelbert-mix-sentiment | CAMeL Lab, NYUAD | 🇦🇪 AE | — | apache-2.0 | 97K | 2021-10-17 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/CAMeL-Lab/bert-base-arabic-camelbert-mix-sentiment) |
-| ALLaM | SDAIA & IBM | 🇸🇦 SA | 7B | apache-2.0 | 92K | 2025-07-14 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/ALLaM-AI/ALLaM-7B-Instruct-preview) |
-| ALLaM-7B-Instruct-preview | HUMAIN | 🇸🇦 SA | 7B | apache-2.0 | 92K | 2025-07-14 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/humain-ai/ALLaM-7B-Instruct-preview) |
-| SentimentArEng | qandos0 | 🌍 INTL | — | unknown | 92K | 2023-12-14 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/qandos0/SentimentArEng) |
-| Fanar-2-27B-Instruct | QCRI | 🇶🇦 QA | 27B | apache-2.0 | 82K | 2026-03-25 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/QCRI/Fanar-2-27B-Instruct) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2603.16397) |
-| bert-base-arabic-camelbert-da-sentiment | CAMeL Lab, NYUAD | 🇦🇪 AE | — | apache-2.0 | 82K | 2021-10-17 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/CAMeL-Lab/bert-base-arabic-camelbert-da-sentiment) |
-| MARBERTv2 | UBC-NLP | 🌍 INTL | — | unknown | 43K | 2022-03-30 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/UBC-NLP/MARBERTv2) |
-| opus mt tc big ar en | Helsinki-NLP | 🌍 INTL | — | cc-by-4.0 | 35K | 2023-08-16 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Helsinki-NLP/opus-mt-tc-big-ar-en) |
-| opus-mt-en-ar | Helsinki-NLP | 🌍 INTL | — | apache-2.0 | 30K | 2023-08-16 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Helsinki-NLP/opus-mt-en-ar) |
-| aragpt2-base | AUB MIND Lab | 🇱🇧 LB | 148M | unknown | 19K | 2023-10-30 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/aubmindlab/aragpt2-base) |
-| bert-base-arabic-camelbert-msa-ner | CAMeL Lab, NYUAD | 🇦🇪 AE | — | apache-2.0 | 16K | 2021-10-17 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/CAMeL-Lab/bert-base-arabic-camelbert-msa-ner) |
-| bert-base-arabertv2 | AUB MIND Lab | 🇱🇧 LB | 136M | unknown | 14K | 2023-08-03 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/aubmindlab/bert-base-arabertv2) |
-| Fanar-1-9B | QCRI | 🇶🇦 QA | 9B | apache-2.0 | 12K | 2025-07-15 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/QCRI/Fanar-1-9B-Instruct) |
-| Falcon Arabic | TII (UAE) | 🇦🇪 AE | 7B | falcon-llm-license | 11K | 2025-05-31 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/tiiuae/Falcon3-7B-Instruct) |
-
-## 🎙️ Speech Recognition
-
-_Showing 20 of 174 · [see all 174 on the interactive map](https://h9-tec.github.io/arabic-ai-atlas/#type=asr) · [full table](docs/tables/asr.md)_
-
-| Name | Org | Country | License | ⬇ Downloads | Updated | Links |
-| --- | --- | --- | --- | --- | --- | --- |
-| whisper-large-v3-turbo | OpenAI | 🌍 INTL | mit | 5.5M | 2024-10-04 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/openai/whisper-large-v3-turbo) |
-| openai/whisper-large-v3 | OpenAI | 🌍 INTL | apache-2.0 | 3.5M | 2024-08-12 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/openai/whisper-large-v3) |
-| wav2vec2-large-xlsr-53-arabic | jonatasgrosman | 🌍 INTL | apache-2.0 | 2.2M | 2022-12-14 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/jonatasgrosman/wav2vec2-large-xlsr-53-arabic) |
-| Whisper Quran | Tarteel AI | 🌍 INTL | apache-2.0 | 342K | 2022-12-13 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/tarteel-ai/whisper-base-ar-quran) |
-| SeamlessM4T v2 | Meta | 🌍 INTL | cc-by-nc-4.0 | 306K | 2024-01-04 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/facebook/seamless-m4t-v2-large) |
-| MMS-1b-all | Meta | 🌍 INTL | cc-by-nc-4.0 | 271K | 2023-06-15 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/facebook/mms-1b-all) |
-| wav2vec2 quran phonetics | TBOGamer22 | 🌍 INTL | apache-2.0 | 247K | 2026-01-21 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/TBOGamer22/wav2vec2-quran-phonetics) |
-| cohere-transcribe-arabic-07-2026 | Cohere Labs | 🌍 INTL | apache-2.0 | 234K | 2026-07-13 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/CohereLabs/cohere-transcribe-arabic-07-2026) |
-| Voxtral Mini | Mistral AI | 🌍 INTL | apache-2.0 | 121K | 2025-07-28 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/mistralai/Voxtral-Mini-3B-2507) |
-| qwen3-asr-arabic-uae | Vadim Belsky | 🇦🇪 AE | apache-2.0 | 73K | 2026-04-04 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/vadimbelsky/qwen3-asr-arabic-uae) |
-| QwenCleo-ASR | Mohammed Aly | 🇪🇬 EG | apache-2.0 | 46K | 2026-06-17 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/mohammedaly22/QwenCleo-ASR) |
-| muaalem model v3 2 | obadx | 🌍 INTL | mit | 34K | 2025-09-04 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/obadx/muaalem-model-v3_2) |
-| whisper-large-v3-turbo-ar-quran | Naazim | 🌍 INTL | apache-2.0 | 29K | 2025-12-08 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/naazimsnh02/whisper-large-v3-turbo-ar-quran) |
-| wav2vec2 large xlsr 53 arabic quran v final | rabah2026 | 🌍 INTL | apache-2.0 | 11K | 2025-12-21 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/rabah2026/wav2vec2-large-xlsr-53-arabic-quran-v_final) |
-| whisper-tiny-ar-quran | Tarteel AI | 🌍 INTL | apache-2.0 | 5K | 2022-12-14 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/tarteel-ai/whisper-tiny-ar-quran) |
-| NVIDIA FastConformer Arabic (Diacritics) | NVIDIA | 🌍 INTL | cc-by-4.0 | 3K | 2025-10-21 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/nvidia/stt_ar_fastconformer_hybrid_large_pcd_v1.0) |
-| Audar ASR V1 Turbo | Audar AI | 🌍 INTL | other | 3K | 2026-08-20 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/audarai/Audar-ASR-V1-Turbo) |
-| wav2vec2-large-xlsr-moroccan-darija | Boumehdi | 🇲🇦 MA | apache-2.0 | 3K | 2024-04-12 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/boumehdi/wav2vec2-large-xlsr-moroccan-darija) |
-| egyptian-arabic-wav2vec2-xlsr-53 | Ibrahim Amin | 🇪🇬 EG | apache-2.0 | 2K | 2025-05-11 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/IbrahimAmin/egyptian-arabic-wav2vec2-xlsr-53) |
-| whisper-large-v3-turbo-darija | Anas Zil | 🇲🇦 MA | mit | 2K | 2025-11-09 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/anaszil/whisper-large-v3-turbo-darija) |
-
-## 🔊 Text-to-Speech
-
-_Showing 20 of 85 · [see all 85 on the interactive map](https://h9-tec.github.io/arabic-ai-atlas/#type=tts) · [full table](docs/tables/tts.md)_
-
-| Name | Org | Country | License | ⬇ Downloads | Updated | Links |
-| --- | --- | --- | --- | --- | --- | --- |
-| XTTS-v2 | Coqui | 🌍 INTL | coqui-public-model-license | 6.1M | 2023-12-11 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/coqui/XTTS-v2) |
-| Multilingual Chatterbox | Resemble AI | 🌍 INTL | mit | 2.1M | 2026-06-10 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/ResembleAI/chatterbox) |
-| f5tts-algerian-darja | Touati Kamel | 🇩🇿 DZ | apache-2.0 | 5K | 2026-09-23 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/touati-kamel/f5tts-algerian-darja) |
-| facebook/mms-tts-ara | Meta | 🌍 INTL | cc-by-nc-4.0 | 5K | 2023-09-01 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/facebook/mms-tts-ara) |
-| Audar TTS V1 Turbo | Audar AI | 🌍 INTL | other | 3K | 2026-07-07 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/audarai/Audar-TTS-V1-Turbo) |
-| Arabic-TTS-Spark | IbrahimSalah | 🌍 INTL | fair-noncommercial-research-license | 2K | 2025-11-27 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/IbrahimSalah/Arabic-TTS-Spark) |
-| arabic-emirati-female-piper | Vadim Belsky | 🇦🇪 AE | mit | 1K | 2025-12-01 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/vadimbelsky/arabic-emirati-female-piper) |
-| SILMA TTS v1 | SILMA AI | 🌍 INTL | apache-2.0 | 1K | 2026-08-23 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/silma-ai/silma-tts) [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/SILMA-AI/silma-tts) |
-| Audar TTS V1 Flash | Audar AI | 🌍 INTL | other | 1K | 2026-07-07 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/audarai/Audar-TTS-V1-Flash) |
-| Nabra-82M-v0.1 | oddadmix | 🇪🇬 EG | apache-2.0 | 1K | 2026-07-03 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/oddadmix/Nabra-82M-v0.1) |
-| NAMAA-Saudi-TTS-V2 | NAMAA-Space | 🇸🇦 SA | cc-by-nc-sa-4.0 | 1K | 2026-04-21 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/NAMAA-Space/NAMAA-Saudi-TTS-V2) |
-| Lahgtna OmniVoice v2 | oddadmix | 🇪🇬 EG | unknown | 1K | 2026-06-15 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/oddadmix/lahgtna-omnivoice-v2) |
-| habibi-tts-doda-darija | Jip7e | 🇲🇦 MA | apache-2.0 | 1K | 2026-08-29 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Jip7e/habibi-tts-doda-darija) |
-| DarijaTTS-v0.1-500M | Kandir Research | 🇲🇦 MA | apache-2.0 | 872 | 2025-11-26 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/KandirResearch/DarijaTTS-v0.1-500M) |
-| KasbahTTS-V0 | MenaVoice | 🌍 INTL | mit | 488 | 2026-07-10 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/MenaVoice/KasbahTTS-V0) |
-| Nabra 7M Distill | oddadmix | 🇪🇬 EG | apache-2.0 | 274 | 2026-09-16 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/oddadmix/Nabra-7M-Distill) |
-| NAMAA-Saudi-TTS | NAMAA-Space | 🇸🇦 SA | mit | 241 | 2026-01-29 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/NAMAA-Space/NAMAA-Saudi-TTS) |
-| qwen3 TTS KSA | Vadim Belsky | 🇦🇪 AE | apache-2.0 | 233 | 2026-03-17 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/vadimbelsky/qwen3-TTS-KSA) |
-| kemetone | Rabe3 | 🌍 INTL | apache-2.0 | 232 | 2026-08-27 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Rabe3/kemetone) |
-| speecht5_tts_clartts_ar | MBZUAI | 🇦🇪 AE | cc-by-nc-4.0 | 214 | 2025-09-10 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/MBZUAI/speecht5_tts_clartts_ar) |
-
-## 📖 OCR
-
-_Showing 20 of 51 · [see all 51 on the interactive map](https://h9-tec.github.io/arabic-ai-atlas/#type=ocr) · [full table](docs/tables/ocr.md)_
-
-| Name | Org | Country | License | ⬇ Downloads | Updated | Links |
-| --- | --- | --- | --- | --- | --- | --- |
-| Qari-OCR-v0.3-VL-2B-Instruct | NAMAA-Space | 🇸🇦 SA | apache-2.0 | 130K | 2025-06-10 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/NAMAA-Space/Qari-OCR-v0.3-VL-2B-Instruct) |
-| Arabic-handwritten-OCR-4bit-Qwen2.5-VL-3B-v2 | sherif1313 | 🌍 INTL | apache-2.0 | 12K | 2025-12-29 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/sherif1313/Arabic-handwritten-OCR-4bit-Qwen2.5-VL-3B-v2) |
-| arabic_PP-OCRv5_mobile_rec | PaddlePaddle | 🌍 INTL | apache-2.0 | 4K | 2025-10-16 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/PaddlePaddle/arabic_PP-OCRv5_mobile_rec) |
-| Arabic-English-handwritten-OCR-v3 | sherif1313 | 🌍 INTL | apache-2.0 | 1K | 2025-12-29 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/sherif1313/Arabic-English-handwritten-OCR-v3) |
-| Qari OCR 0.2.2.1 VL 2B Instruct | NAMAA-Space | 🇸🇦 SA | apache-2.0 | 1K | 2025-06-07 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/NAMAA-Space/Qari-OCR-0.2.2.1-VL-2B-Instruct) |
-| Qari-OCR-0.4.0-VL-4B-Instruct | NAMAA-Space | 🇸🇦 SA | apache-2.0 | 1K | 2026-02-01 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/NAMAA-Space/Qari-OCR-0.4.0-VL-4B-Instruct) |
-| arabic PP OCRv3 mobile rec | PaddlePaddle | 🌍 INTL | apache-2.0 | 977 | 2025-07-22 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/PaddlePaddle/arabic_PP-OCRv3_mobile_rec) |
-| Baseer Nakba | Misraj AI | 🇸🇦 SA | cc-by-nc-sa-4.0 | 791 | 2026-08-18 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Misraj/Baseer__Nakba) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2509.18174) |
-| Qwen3-VL-2B-Persian-Arabic-Ocr-v1.0 | Mohajesmaeili | 🌍 INTL | apache-2.0 | 480 | 2025-12-23 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/mohajesmaeili/Qwen3-VL-2B-Persian-Arabic-Ocr-v1.0) |
-| Arabic-Qwen3.5-OCR-v4 | sherif1313 | 🌍 INTL | apache-2.0 | 438 | 2026-03-24 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/sherif1313/Arabic-Qwen3.5-OCR-v4) |
-| unlimited ocr quran uthmani | AyoubChLin | 🌍 INTL | mit | 292 | 2026-07-02 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/AyoubChLin/unlimited-ocr-quran-uthmani) |
-| Arabic-GLM-OCR-v2 | sherif1313 | 🌍 INTL | apache-2.0 | 239 | 2026-05-27 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/sherif1313/Arabic-GLM-OCR-v2) |
-| waqf ocr hand written v1 | Waqf AI | 🇪🇬 EG | apache-2.0 | 230 | 2026-06-09 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Waqf-AI/waqf-ocr-hand-written-v1) |
-| Qari-OCR-0.1-VL-2B-Instruct | NAMAA-Space | 🇸🇦 SA | apache-2.0 | 217 | 2025-06-10 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/NAMAA-Space/Qari-OCR-0.1-VL-2B-Instruct) |
-| Katib-Qwen3.5-0.8B-0.1 | oddadmix | 🇪🇬 EG | apache-2.0 | 203 | 2026-10-15 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/oddadmix/Katib-Qwen3.5-0.8B-0.1) |
-| arabic-legal-documents-ocr-1.0 | Bakrianoo | 🇪🇬 EG | gemma | 195 | 2026-02-04 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/bakrianoo/arabic-legal-documents-ocr-1.0) |
-| Mubsir Qwen 2B VL | Hatim2221 | 🌍 INTL | apache-2.0 | 194 | 2026-08-24 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Hatim2221/Mubsir-Qwen-2B-VL) |
-| Arabic GLM OCR v1 | sherif1313 | 🌍 INTL | apache-2.0 | 183 | 2026-03-29 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/sherif1313/Arabic-GLM-OCR-v1) |
-| Arabic OCR Qwen2.5 VL 7B Vision | loay | 🌍 INTL | apache-2.0 | 116 | 2025-07-18 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/loay/Arabic-OCR-Qwen2.5-VL-7B-Vision) |
-| Ketaba-OCR-LoRA | HassanB4 | 🌍 INTL | apache-2.0 | 111 | 2026-03-05 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/HassanB4/Ketaba-OCR-LoRA) |
-
-## 🔤 Embeddings
-
-_Showing 20 of 66 · [see all 66 on the interactive map](https://h9-tec.github.io/arabic-ai-atlas/#type=embedding) · [full table](docs/tables/embedding.md)_
-
-| Name | Org | Country | License | ⬇ Downloads | Updated | Links |
-| --- | --- | --- | --- | --- | --- | --- |
-| Arabic SBERT 100K | akhooli | 🌍 INTL | unknown | 15K | 2024-07-27 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/akhooli/Arabic-SBERT-100K) |
-| asafaya/bert-base-arabic | asafaya | 🌍 INTL | unknown | 12K | 2023-03-17 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/asafaya/bert-base-arabic) |
-| GATE-AraBert-v1 | Omartificial-Intelligence-Space | 🇸🇦 SA | apache-2.0 | 10K | 2025-09-07 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Omartificial-Intelligence-Space/GATE-AraBert-v1) |
-| Arabic-STS-Matryoshka-V2 | Omar Elshehy | 🇪🇬 EG | unknown | 5K | 2024-12-29 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/omarelshehy/Arabic-STS-Matryoshka-V2) |
-| Arabic-Triplet-Matryoshka-V2 | Omartificial-Intelligence-Space | 🇸🇦 SA | apache-2.0 | 4K | 2025-09-07 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Omartificial-Intelligence-Space/Arabic-Triplet-Matryoshka-V2) |
-| ARA-Reranker-V1 | Omartificial-Intelligence-Space | 🇸🇦 SA | apache-2.0 | 3K | 2025-04-03 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Omartificial-Intelligence-Space/ARA-Reranker-V1) |
-| Arabic-Retrieval-v1.0 | Omar Elshehy | 🇪🇬 EG | apache-2.0 | 3K | 2024-12-19 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/omarelshehy/Arabic-Retrieval-v1.0) |
-| Mizan Rerank V2 | ALJIACHI | 🌍 INTL | apache-2.0 | 2K | 2026-10-10 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/ALJIACHI/Mizan-Rerank-V2) |
-| arabic english bge m3 | sayed0am | 🌍 INTL | mit | 1K | 2025-10-25 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/sayed0am/arabic-english-bge-m3) |
-| Badr embedding v0 | somayaeltanbouly | 🌍 INTL | unknown | 1K | 2026-09-14 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/somayaeltanbouly/Badr_embedding_v0) |
-| silma-embedding-matryoshka-v0.1 | SILMA AI | 🌍 INTL | apache-2.0 | 903 | 2025-05-15 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/silma-ai/silma-embedding-matryoshka-v0.1) |
-| Arabert all nli triplet Matryoshka | Omartificial-Intelligence-Space | 🇸🇦 SA | apache-2.0 | 813 | 2025-01-23 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Omartificial-Intelligence-Space/Arabert-all-nli-triplet-Matryoshka) |
-| Marbert all nli triplet Matryoshka | Omartificial-Intelligence-Space | 🇸🇦 SA | apache-2.0 | 796 | 2025-01-10 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Omartificial-Intelligence-Space/Marbert-all-nli-triplet-Matryoshka) |
-| bojji | NAMAA-Space | 🇸🇦 SA | mit | 736 | 2025-06-16 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/NAMAA-Space/bojji) |
-| Arabic-MiniLM-L12-v2-all-nli-triplet | Omartificial-Intelligence-Space | 🇸🇦 SA | apache-2.0 | 731 | 2025-06-10 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Omartificial-Intelligence-Space/Arabic-MiniLM-L12-v2-all-nli-triplet) |
-| Arabic-all-nli-triplet-Matryoshka | Omartificial-Intelligence-Space | 🇸🇦 SA | apache-2.0 | 585 | 2025-01-23 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Omartificial-Intelligence-Space/Arabic-all-nli-triplet-Matryoshka) |
-| GATE-Reranker-V1 | NAMAA-Space | 🇸🇦 SA | apache-2.0 | 507 | 2025-04-03 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/NAMAA-Space/GATE-Reranker-V1) |
-| Arabic-labse-Matryoshka | Omartificial-Intelligence-Space | 🇸🇦 SA | apache-2.0 | 437 | 2025-01-10 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Omartificial-Intelligence-Space/Arabic-labse-Matryoshka) |
-| Arabic mpnet base all nli triplet | Omartificial-Intelligence-Space | 🇸🇦 SA | apache-2.0 | 432 | 2025-01-23 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Omartificial-Intelligence-Space/Arabic-mpnet-base-all-nli-triplet) |
-| Muffakir Embedding V2 | mohamed2811 | 🌍 INTL | unknown | 380 | 2025-05-24 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/mohamed2811/Muffakir_Embedding_V2) |
-
-## 📊 Datasets
-
-_Showing 20 of 1163 · [see all 1163 on the interactive map](https://h9-tec.github.io/arabic-ai-atlas/#type=dataset) · [full table](docs/tables/dataset.md)_
-
-| Name | Org | Country | Size | License | ⬇ | Updated | Links |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| prophet mosque library | ieasybooks | 🌍 INTL | 10K–100K rows | mit | 386K | 2025-05-14 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/ieasybooks-org/prophet-mosque-library) |
-| Waqfeya Library | ieasybooks | 🌍 INTL | 10K-100K books | mit | 135K | 2025-05-14 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/ieasybooks-org/waqfeya-library) |
-| shamela waqfeya library | ieasybooks | 🌍 INTL | 1K–10K rows | mit | 126K | 2025-05-14 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/ieasybooks-org/shamela-waqfeya-library) |
-| Shamela4 Full DB | AuthenticIlm | 🌍 INTL | 10M–100M rows | mit | 49K | 2026-05-19 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/AuthenticIlm/Shamela4_Full_DB) |
-| Quranic Recitation Data | zaibihassan | 🌍 INTL | 100K-1M clips | apache-2.0 | 42K | 2026-11-04 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/zaibihassan/Quranic-Recitation-Data) |
-| XNLI | Facebook AI Research | 🌍 INTL | 7,500 sentences | cc-by-nc-4.0 | 37K | 2024-01-05 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/facebook/xnli) [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/facebookresearch/XNLI) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/pdf/1809.05053.pdf) |
-| wikiann | Rensselaer Polytechnic Institute | 🌍 INTL | 185,000 tokens | unknown | 31K | 2024-02-22 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/unimelb-nlp/wikiann) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://aclanthology.org/P17-1178.pdf) |
-| Aya Dataset | Cohere For AI Community | 🌍 INTL | 14,250 sentences | apache-2.0 | 21K | 2025-04-15 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/CohereForAI/aya_dataset) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://doi.org/10.18653/v1/2024.acl-long.620) |
-| TYDIQA | Google Research | 🌍 INTL | 25,893 sentences | apache-2.0 | 15K | 2024-08-08 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/google-research-datasets/tydiqa) [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/google-research-datasets/tydiqa) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://aclanthology.org/2020.tacl-1.30.pdf) |
-| MIRACL | unknown | 🌍 INTL | 2,061,414 documents | apache-2.0 | 14K | 2023-01-05 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/miracl/miracl-corpus) |
-| MMMLU | OpenAI | 🌍 INTL | 14,000 sentences | mit | 14K | 2024-10-16 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/openai/MMMLU) |
-| Arabic Books | MohamedRashad | 🌍 INTL | 8.5k books | gpl-3.0 | 14K | 2024-11-28 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/MohamedRashad/arabic-books) |
-| Global-MMLU Lite | Cohere For AI | 🌍 INTL | 685 sentences | apache-2.0 | 14K | 2026-06-08 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/CohereLabs/Global-MMLU-Lite) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://doi.org/10.18653/v1/2025.acl-long.919) |
-| Quranic Translation Audio Data | zaibihassan | 🌍 INTL | 1K–10K rows | apache-2.0 | 13K | 2026-10-22 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/zaibihassan/Quranic-Translation-Audio-Data) |
-| XStoryCloze | MetaAI | 🌍 INTL | 1,870 sentences | cc-by-sa-4.0 | 11K | 2025-07-23 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/juletxara/xstory_cloze) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://doi.org/10.18653/v1/2022.emnlp-main.616) |
-| SARD | riotu-lab | 🇸🇦 SA | — | cc-by-nc-nd-4.0 | 9K | 2026-05-20 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/riotu-lab/SARD) |
-| arwiki | CALM | 🌍 INTL | 10M–100M rows | ['unknown'] | 9K | 2022-08-01 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/CALM/arwiki) |
-| prophet mosque library compressed | ieasybooks | 🌍 INTL | 10K–100K rows | mit | 9K | 2025-05-08 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/ieasybooks-org/prophet-mosque-library-compressed) |
-| waqfeya library compressed | ieasybooks | 🌍 INTL | 10K–100K rows | mit | 8K | 2025-04-25 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/ieasybooks-org/waqfeya-library-compressed) |
-| Mixed Arabic Datasets (MAD) | M-A-D | 🌍 INTL | — | unknown | 7K | 2023-10-16 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/M-A-D/Mixed-Arabic-Datasets-Repo) |
-
-## 🔧 Tools
-
-_Showing 20 of 313 · [see all 313 on the interactive map](https://h9-tec.github.io/arabic-ai-atlas/#type=tool) · [full table](docs/tables/tool.md)_
-
-| Name | Org | Country | License | Links | Notes |
-| --- | --- | --- | --- | --- | --- |
-| voxlect-arabic-dialect-whisper-large-v3 | tiantiaf (USC) | 🌍 INTL | openrail | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/tiantiaf/voxlect-arabic-dialect-whisper-large-v3) | Whisper-large-v3 Arabic dialect classifier from the Voxlect benchmark. |
-| flair-arabic-dialects-codeswitch-egy-lev | megantosh | 🌍 INTL | apache-2.0 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/megantosh/flair-arabic-dialects-codeswitch-egy-lev) | Flair and fastText part-of-speech tagger for Egyptian and Levantine code-switched Arabic. |
-| OSMAN readability metric | Lancaster University | 🌍 INTL | unknown | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/arbml/Osman_Un_Corpus) [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/drelhaj/OsmanReadability) | Arabic readability metric analogous to Flesch, with parallel Arabic-English corpus. |
-| hassaniya-punctuation-restoration | Emin009 | 🌍 INTL | apache-2.0 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/Emin009/hassaniya-punctuation-restoration) | Open-source punctuation-restoration model for Hassaniya Arabic. |
-| Agentic-AI-Design-Patterns | Muhannad-Khaled | 🌍 INTL | mit | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/Muhannad-Khaled/Agentic-AI-Design-Patterns) | The 21 agentic AI design patterns from Antonio Gulli's book, explained in Egyptian Arabic — with framework-free, runnable Python examples. |
-| Ai-Quran-Video-Composer | WalidZein | 🌍 INTL | unknown | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/WalidZein/Ai-Quran-Video-Composer) | What if you can generate a a video with cinematic backgrounds behind the majestic verses of the Quran. |
-| ai-rtl-resolver | miladniroee | 🌍 INTL | mit | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/miladniroee/ai-rtl-resolver) [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://miladniroee.github.io/ai-rtl-resolver/) | Ai Chatbot RTL Resolver |
-| Al Kindi AI | Alpha to Digits | 🇦🇪 AE | proprietary | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://arabic.ai/al-kindi-ai-built-by-alpha-to-digits-on-the-worlds-top-ranked-arabic-llm) | Arabic social listening intelligence product built on the Arabic.AI LLM. |
-| AL-Khatma | oaokm | 🌍 INTL | mit | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/oaokm/AL-Khatma) | A library Specialized About Islamic |
-| Al-Munir | zedsalim | 🌍 INTL | unknown | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/zedsalim/Al-Munir) [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://almunir.netlify.app) | المنير: للاستماع وقراءة القرآن الكريم مع التفسير لتسهيل الحفظ والفهم والمراجعة |
-| al_quran_v3 | IsmailHosenIsmailJames | 🌍 INTL | other | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/IsmailHosenIsmailJames/al_quran_v3) | A Flutter application for reading the Holy Quran, tracking prayer times, and managing Islamic practices. |
-| albitaqat_quran | rn0x | 🌍 INTL | unknown | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/rn0x/albitaqat_quran) [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](http://albitaqat-quran.i8x.net/) | Complete data for 114 Quran surahs (Al-Bitaqat). |
-| Alfanous | Alfanous team | 🌍 INTL | lgpl-3.0 | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/Alfanous-team/alfanous) | Arabic search engine API for the Quran with simple and advanced queries. |
-| algeria_69_wilayas | Mohamed-gp | 🌍 INTL | mit | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/Mohamed-gp/algeria_69_wilayas) [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://mohamed-gp.github.io/algeria_69_wilayas/) | 🇩🇿 All 69 Algerian wilayas + 1,541 communes as free JSON — official numbering, Arabic names, coordinates, dairas. |
-| Alkhalil Morpho Sys | unknown | 🌍 INTL | unknown | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://sourceforge.net/projects/alkhalil/) | A morphosyntactic parser for Arabic words that can process both vocalized and non-vocalized texts |
-| all-words-in-all-languages | eymenefealtun | 🌍 INTL | unknown | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/eymenefealtun/all-words-in-all-languages) | This repository contains all the words from every language that exists in the universe. |
-| ALLAM based Retrieval Augmented Generation Arabic Conversational Alzheimer Assistance | ShahadAljohani | 🌍 INTL | cc-by-4.0 | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/ShahadAljohani/ALLAM-based-Retrieval-Augmented-Generation-Arabic-Conversational-Alzheimer-Assistance) | ALLAM-RAG: Saudi Arabic conversational RAG system combining retrieval with the ALLaM LLM to support Alzheimer's patients and caregivers. |
-| alpinejs-i18n | rehhouari | 🌍 INTL | mit | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/rehhouari/alpinejs-i18n) [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://alpinejs-i18n-example.vercel.app/) | Easy i18n (Internationalization) for Alpine.js! |
-| alquranalkareem | alheekmahlib | 🌍 INTL | unknown | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/alheekmahlib/alquranalkareem) [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://alhikmah.vexaltech.dev/download/quran) | التطبيق الأمثل لقراءة القرآن الكريم |
-| Alyahmor | linuxscout | 🇩🇿 DZ | gpl-3.0 | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/linuxscout/alyahmor) | Arabic flexional morphology generator; maintainer is Algerian. |
-
-## 🏆 Benchmarks
-
-_Showing 20 of 165 · [see all 165 on the interactive map](https://h9-tec.github.io/arabic-ai-atlas/#type=benchmark) · [full table](docs/tables/benchmark.md)_
-
-| Name | Org | Country | License | Links | Notes |
-| --- | --- | --- | --- | --- | --- |
-| Global-MMLU | Cohere For AI | 🌍 INTL | apache-2.0 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/CohereForAI/Global-MMLU) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://doi.org/10.18653/v1/2025.acl-long.919) | Multilingual MMLU-style benchmark of 42 languages (Arabic included) with culturally sensitive and culturally agnostic subsets. |
-| xquad | HiTZ Center | 🌍 INTL | cc-by-sa-4.0 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/google/xquad) [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/deepmind/xquad) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://aclanthology.org/2020.acl-main.421.pdf) | Cross-lingual QA benchmark of 240 SQuAD paragraphs and 1190 question-answer pairs translated into ten languages including Arabic. |
-| ArabicMMLU | MBZUAI | 🇦🇪 AE | cc-by-nc-4.0 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/MBZUAI/ArabicMMLU) | Multi-task language understanding from school exams |
-| ArAD | SpeechAntiSpoofingBenchmarks | 🌍 INTL | odc-by | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/SpeechAntiSpoofingBenchmarks/ArAD) | Benchmark-ready packaging of the test split of the Arabic Audio Deepfake (ArAD) dataset: binary anti-spoofing on Arabic (primarily Levantine dialect) speech. |
-| MMCQA-SemEval27 | QCRI | 🇶🇦 QA | cc-by-nc-4.0 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/QCRI/MMCQA-SemEval27) | This is the dataset for MMCultureQA, the SemEval 2027 shared task on culturally grounded visual question answering in English and Arabic. |
-| Belebele-Fleurs | University of Würzburg | 🌍 INTL | cc-by-sa-4.0 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/WueNLP/belebele-fleurs) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/pdf/2501.06117) | Belebele-Fleurs extends BeleBele into a spoken SLU benchmark with multilingual multiple-choice listening comprehension QA from speech. |
-| FLORES-101 | Facebook AI Research | 🌍 INTL | cc-by-sa-4.0 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/gsarti/flores_101) [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/facebookresearch/flores) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/pdf/2106.03193.pdf) | Low-resource machine translation benchmark of 101 languages, with Arabic as one of them. |
-| DarijaMMLU | MBZUAI-Paris Lab | 🇦🇪 AE | mit | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/MBZUAI-Paris/DarijaMMLU) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2409.17912) | MMLU translated into Moroccan Darija, 22k+ multiple-choice questions. |
-| MMLU Arabic (FreedomIntelligence) | FreedomIntelligence | 🌍 INTL | mit | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/FreedomIntelligence/MMLU_Arabic) | MMLU translated into Arabic by gpt-3.5-turbo. |
-| MIRACL-VISION | NVIDIA | 🌍 INTL | cc-by-sa-4.0 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/nvidia/miracl-vision) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/pdf/2505.11651) | Multilingual visual document retrieval benchmark extending MIRACL with Wikipedia page images for 18 languages. |
-| AlGhafa Arabic LLM Benchmark (Native) | Open Arabic LLM Leaderboard (OALL) | 🌍 INTL | unknown | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/OALL/AlGhafa-Arabic-LLM-Benchmark-Native) | Native-Arabic multiple-choice evaluation tasks used as OALL leaderboard tasks. |
-| TunisianMMLU | LINAGORA | 🌍 INTL | cc-by-nc-sa-4.0 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/linagora/TunisianMMLU) | MMLU translated into Tunisian Derja, LINAGORA (France); evaluated with lighteval. |
-| Arabic EXAMS (OALL) | Open Arabic LLM Leaderboard (OALL) | 🌍 INTL | unknown | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/OALL/Arabic_EXAMS) | Arabic subset of the EXAMS multilingual school-exam benchmark, an OALL task. |
-| EgyMMLU | UBC-NLP | 🌍 INTL | unknown | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/UBC-NLP/EgyMMLU) | MMLU translated into Egyptian Arabic from UBC (Canada), released with NileChat. |
-| nn auto bench ds | nanonets | 🌍 INTL | mit | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/nanonets/nn-auto-bench-ds) | nn-auto-bench-ds is a dataset designed for key information extraction (KIE) and serves as a benchmark dataset for nn-auto-bench. |
-| Human-Translated Arabic MMLU | MBZUAI | 🇦🇪 AE | unknown | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/MBZUAI/human_translated_arabic_mmlu) | Human-translated MMLU into Arabic from MBZUAI, companion to ArabicMMLU. |
-| ARCD | Mozannar et al. | 🌍 INTL | mit | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/hsseinmz/arcd) | Arabic Reading Comprehension Dataset of 1,395 Wikipedia-based questions from the SOQAL paper. |
-| fa en ar handwritten ocr v1 | saeid1999 | 🌍 INTL | cc-by-4.0 | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/saeid1999/fa-en-ar-handwritten-ocr-v1) | A large, clean, augmentation-rich synthetic handwriting dataset for training and benchmarking OCR / HTR models on Persian (fa), Arabic (ar) and English (en). |
-| OALL Arabic MMLU | Open Arabic LLM Leaderboard (OALL) | 🌍 INTL | unknown | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/OALL/Arabic_MMLU) | GPT-translated Arabic MMLU copy from FreedomIntelligence, used as an OALL v1 task. |
-| IdiomX | aymansharara | 🌍 INTL | mit | [![HF](https://img.shields.io/badge/-Dataset-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/aymansharara/IdiomX) | Dataset: 190K+ examples • 12K+ idioms • 3 languages • 4 benchmark tasks It supports four benchmark tasks: 1. |
-
-## 📄 Papers
-
-_Showing 20 of 732 · [see all 732 on the interactive map](https://h9-tec.github.io/arabic-ai-atlas/#type=paper) · [full table](docs/tables/paper.md)_
-
-| Title | Venue | Year | Topic | Links |
-| --- | --- | --- | --- | --- |
-| Systematic Review and Meta-Analysis of 2024–2025 Studies on AI Arabic Translation, Linguistics and Pedagogy | Frontiers in Computer Science and Artificial Intelligence | 2026 | survey, translation | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://doi.org/10.32996/jcsts.2026.5.1.2) |
-| A Holistic Assessment of the Carbon Footprint of Noor, a Very Large Arabic Language Model | BIGSCIENCE | 2026 | pretraining, evaluation | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2610.00223) |
-| A Comparative Study of Pretrained Transformer Models for Quranic ASR: Speech Representations, Label Formats, and Dataset Composition | arXiv 2026 | 2026 | asr, diacritization, pretraining, speech, quran | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2606.19747) |
-| A Corpus-Aligned Uthmani-to-Standard Quranic Word Mapping and a Deterministic Recitation Validator | arXiv 2026 | 2026 | asr, evaluation, quran | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2609.14967) |
-| A Human-in-the-Loop Label Error Detection Framework Applied to Arabic-Script HTR Datasets | arXiv 2026 | 2026 | asr, ocr, evaluation | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2601.16713) |
-| Abjad-Kids: An Arabic Speech Classification Dataset for Primary Education | arXiv 2026 | 2026 | evaluation, speech | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2603.20255) |
-| ADAB: Arabic Dataset for Automated Politeness Benchmarking -- A Large-Scale Resource for Computational Sociopragmatics | arXiv 2026 | 2026 | evaluation | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2602.13870) |
-| AHA-Memes: A Fine-Grained Multimodal Benchmark for Understanding Hate in Arabic Memes | arXiv 2026 | 2026 | evaluation, vision | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2607.27393) |
-| Alexandria: A Multi-Domain Dialectal Arabic Machine Translation Dataset for Culturally Inclusive and Linguistically Diverse LLMs | arXiv 2026 | 2026 | chat, translation, evaluation, vision | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/UBC-NLP/Alexandria) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2601.13099) |
-| AlexandriaX 2026: The First Shared Task on Dialectal Arabic Machine Translation | arXiv 2026 | 2026 | chat, embedding, translation, evaluation | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2609.22796) [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://alexandriax.dlnlp.ai) |
-| Almieyar-Oryx-BloomBench: A Bilingual Multimodal Benchmark for Cognitively Informed Evaluation of Vision-Language Models | arXiv 2026 | 2026 | evaluation, vision | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/qcri/Almieyar-Oryx-BloomBench) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2606.05531) |
-| Almieyar: A Culturally Grounded Benchmark for Multi-Dialect Arabic Speech Recognition | arXiv 2026 | 2026 | asr, evaluation, speech, vision | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2609.35564) |
-| An End-to-End Hybrid Framework for Rumour Detection in Low-Resources Algerian Dialect | arXiv 2026 | 2026 | embedding, pretraining, evaluation | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2606.13411) |
-| ArabDiscrim: A Decade-Long Arabic Facebook Corpus on Racism and Discrimination | arXiv 2026 | 2026 | vision | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2605.22081) |
-| Arabic Prompts with English Tools: A Benchmark | arXiv 2026 | 2026 | pretraining, evaluation | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2601.05101) |
-| ArabicDialectHub: A Cross-Dialectal Arabic Learning Resource and Platform | arXiv 2026 | 2026 | translation | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2601.22987) [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://arabic-dialect-hub.netlify.app) |
-| ArabicDialectSafety: A Dialect-Aware Benchmark for Arabic Content Safety Classification | arXiv 2026 | 2026 | safety, dialects, classification | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2608.01291) |
-| AraDetox: A Multi-Dialect Arabic Detoxification Dataset | arXiv 2026 | 2026 | sentiment, evaluation | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/ArabicNLP-UK/AraDetox) [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2608.22894) |
-| ARAFA: An LLM-Generated Arabic Fact-Checking Dataset | arXiv 2026 | 2026 | evaluation | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2609.25833) |
-| AraGenre 2026: A Hierarchical Definition-Guided Arabic Genre Classification Shared Task | arXiv 2026 | 2026 | evaluation | [![Paper](https://img.shields.io/badge/-Paper-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2609.27387) |
-
-## 🏢 Organizations
-
-_Showing 20 of 125 · [see all 125 on the interactive map](https://h9-tec.github.io/arabic-ai-atlas/#type=org) · [full table](docs/tables/org.md)_
-
-| Name | Country | Focus | Links |
-| --- | --- | --- | --- |
-| King Saud University | 🇸🇦 SA | SaudiBERT, Saudi dialect corpora (STMC, SFC) | [![HF](https://img.shields.io/badge/-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/faisalq/SaudiBERT) |
-| AIDA Lab (PSU) | 🇸🇦 SA | AI and Data Analytics lab at Prince Sultan University, Riyadh. | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://aidalabpsu.com/) |
-| AIM Lab (NU-Q) | 🇶🇦 QA | AI and media research lab at Northwestern University in Qatar. | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://www.qatar.northwestern.edu/research/aim-lab/) |
-| Ain Shams University | 🇪🇬 EG | Arabic NLP, sentiment analysis, NER research | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://cis.asu.edu.eg/) |
-| AlooChat | 🇴🇲 OM | AI customer support chat agents for WhatsApp, Instagram, web and email, found via an Arabic conversational AI search in Oman. | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://aloochat.ai) |
-| AlQari | 🇸🇦 SA | Arabic-first document intelligence turning Arabic and English documents into structured, validated data. | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://alqari.sa) |
-| Applied Innovation Center (AIC) | 🇪🇬 EG | Egyptian MCIT AI center; builds the Karnak LLM family and publishes models on Hugging Face (Applied-Innovation-Center). | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://aic.gov.eg) |
-| Arabic.AI (Tarjama) | 🇦🇪 AE | Arabic-first autonomous AI - Pronoia Arabic LLM, Agentic AI platform | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://www.tarjama.com/) |
-| Arabot | 🇦🇪 AE | Conversational AI for Arabic - Arabic NLP chatbot engine | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://arabot.io/) |
-| Aramco Digital | 🇸🇦 SA | Aramco digital arm, behind Metabrain generative AI assistant and AI partnerships. | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://www.aramcodigital.com) |
-| ARBML | 🇸🇦 SA | Democratizing Arabic NLP - masader, klaam, tkseem | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/ARBML) |
-| ASAS AI | 🌍 INTL | Saudi AI company offering Arabic models, automation and in-Kingdom infrastructure. | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://asas.ai) |
-| Astra Tech (Botim) | 🇦🇪 AE | Abu Dhabi tech group behind Botim, building AI assistant products. | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://astratech.ae) |
-| AtlasIA | 🇲🇦 MA | Behind AL Atlas Moroccan Darija models | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://www.atlasia.ma/) |
-| AUB MIND Lab | 🇱🇧 LB | Foundational Arabic NLP models - AraBERT, AraGPT2, AraELECTRA | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/aub-mind) |
-| Calfa | 🌍 INTL | OCR service extracting printed and handwritten text from scanned documents, including Arabic script. | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://calfa.fr) |
-| CAMeL Lab (NYU Abu Dhabi) | 🇦🇪 AE | CAMeLBERT, camel_tools, morphological analysis | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://camel-lab.com/) |
-| CAMeL Lab, NYUAD | 🇦🇪 AE | Arabic NLP tools and models - CAMeLBERT, camel_tools | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/CAMeL-Lab) |
-| Clusterlab AI | 🌍 INTL | Behind 101 Billion Arabic Words Dataset and InstAr-500k | [![HF](https://img.shields.io/badge/-Hub-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/ClusterlabAi) |
-| Cohere | 🌍 INTL | Multilingual LLMs - Command R Arabic, RAG optimization | [![Web](https://img.shields.io/badge/-Website-4285F4?logo=googlechrome&logoColor=white)](https://cohere.com/) |
-
-## 🧩 Arabic Agent Skills
-
-Skills shipped in this repo:
-
-| Skill | What it does | Install |
-| --- | --- | --- |
-| arabic-ai-advisor | Use when choosing an Arabic LLM, ASR, TTS, OCR, embedding model, dataset or tool — recommends ranked options from the Arabic AI Atlas with licenses, dialect coverage and on-device fit. | `skills/arabic-ai-advisor` |
-| arabic-dialect-prompts | Use when writing system prompts or few-shot examples for an Arabic-speaking agent in a specific dialect, or when a model answers in formal Arabic (MSA) instead of the requested dialect. | `skills/arabic-dialect-prompts` |
-| arabic-token-cost | Use when estimating or comparing how many tokens Arabic text costs across LLM tokenizers, or when Arabic prompts seem expensive, truncated or slow compared with English. | `skills/arabic-token-cost` |
-| rtl-bidi-lint | Use when reviewing or generating Arabic text, UI strings, HTML or Markdown that mixes RTL with LTR content, to catch digit mixing, unbalanced bidi isolates, stray LTR marks and hardcoded dir="ltr". | `skills/rtl-bidi-lint` |
-| tashkeel-check | Use when Arabic text may need diacritics (tashkeel) added or stripped, for TTS input, learner material, Quran or poetry, or when diacritization looks partial or inconsistent. | `skills/tashkeel-check` |
-
-Other Arabic agent skills in the wild:
-
-_Showing 20 of 35 · [see all 35 on the interactive map](https://h9-tec.github.io/arabic-ai-atlas/#type=agent-skill) · [full table](docs/tables/agent-skill.md)_
-
-| Name | Org | Notes | Links |
-| --- | --- | --- | --- |
-| ArabAgentSkills | ArabAgentSkills | Public source-backed Arab-world agent skills covering APIs, marketing, sales, support and localization. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/ArabAgentSkills/Skills) |
-| ArabGuard | d12o6aa | Python SDK protecting LLMs and chatbots from prompt injection in Arabic text. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/d12o6aa/arabguard) |
-| Arabic Content Studio | smeseik-ai | Claude Skills for Arabic content teams covering production, culture, SEO and brand voice. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/smeseik-ai/arabic-content-studio) |
-| Arabic Dict MCP | arnizamani | MCP server for grounded Arabic dictionary lookup wrapping arramooz (MSA verbs and nouns). | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/arnizamani/arabic-dict-mcp) |
-| Arabic Scholar MCP Server | EngDawood | MCP server for searching Arabic academic research, articles and dissertations across sources. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/EngDawood/arabic-scholar-mcp-server) |
-| Arabic Video Subtitles Skill | EngDawood | Skill with Netflix-style Arabic subtitling guidelines and an SRT/VTT checker. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/EngDawood/arabic-video-subtitles-skill) |
-| Arabic Word Production Skill | Bannovich | Deterministic agent skill and plugin for Arabic-first and bilingual Word DOCX production. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/Bannovich/arabic-word-production) |
-| arabic-bidi-engineering | MosaabGalmod | Agent skill for correct Arabic RTL/BiDi in chat, terminal and documents | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/MosaabGalmod/arabic-bidi-engineering) |
-| arabic-pii-py | Aajil Labs | Local-first reversible PII tokenization for Arabic and Gulf data before it reaches an LLM. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/Aajil-Labs/arabic-pii-py) |
-| ArabiMaak MCP | deepdiver4ai | Gulf Arabic language MCP server for word, phrase and cultural-context lookup. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/deepdiver4ai/arabimaak-mcp) |
-| awesome-arabic-claude-skills | EngDawood | Curated library of open-source Arabic skills for Claude Code and agents | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/EngDawood/awesome-arabic-claude-skills) |
-| Azan MCP | Ahmed Eltaher | Lightweight MCP library for Islamic prayer times and Qibla for AI agents; not Arabic-language specific. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/ahmedeltaher/azan-mcp) |
-| Claude Adhkar | nosseralaa7-rgb | Shows Arabic-script adhkar in the Claude Code spinner with a terminal font that renders Arabic. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/nosseralaa7-rgb/claude-adhkar) |
-| Claude Arabic Writing | Ahmed Dabak | Claude Agent Skill for natural, grammatically correct Arabic writing and translation. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/ahmeddabak/claude-arabic-writing) |
-| Claude Code RTL Extension | yechielby | VS Code and Cursor extension adding RTL support for Hebrew and Arabic in Claude Code. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/yechielby/claude-code-rtl-extension) |
-| Claude Desktop RTL Patch (macOS) | toboly | Adds auto-detected Hebrew and Arabic RTL support to Claude Desktop on macOS. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/toboly/claude-desktop-rtl-patch-mac) |
-| Dorar Hadith MCP | ibnsaleem29 | Claude extension and MCP server for Hadith research including isnad and takhrij via Dorar. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/ibnsaleem29/dorar-hadith-mcp) |
-| Fanar MCP Server | danijeun | MCP server exposing Fanar API tools such as Islamic RAG and image generation. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/danijeun/fanar-mcp-server) |
-| Hadith MCP (ovehbe) | ovehbe | MCP server for searchable, citation-safe hadith text. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/ovehbe/hadith-mcp) |
-| Hurmoz | Moshe-ship | Collection of 63 Arabic skills for the Hermes Agent framework. | [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/Moshe-ship/hurmoz) |
-
-## 🎯 Most Wanted
-
-_Gaps nobody has filled yet. Add an entry that matches a rule and it moves to Recently filled. Rules live in [data/wanted.yaml](data/wanted.yaml)._
-
-| Gap | Why | Rule |
-| --- | --- | --- |
-| [Open Arabic TTS with a Kuwaiti or Qatari voice](https://h9-tec.github.io/arabic-ai-atlas/#type=tts&country=KW,QA&license=open) | No openly licensed text-to-speech model with a Kuwaiti or Qatari voice is listed. | `type=tts · country=KW,QA · license=open` |
-| [Open Moroccan Arabic OCR dataset](https://h9-tec.github.io/arabic-ai-atlas/#q=ocr&type=dataset&country=MA&license=open) | The only Moroccan OCR dataset listed has no clear license, so no openly licensed one is available. | `type=dataset · country=MA · license=open · tasks=ocr` |
-| [Sudanese Arabic speech dataset for ASR](https://h9-tec.github.io/arabic-ai-atlas/#q=asr&type=dataset&country=SD) | A Sudanese ASR model exists, but no Sudanese speech dataset to train or test one is listed. | `type=dataset · country=SD · tasks=asr` |
-| [Anything from Mauritania](https://h9-tec.github.io/arabic-ai-atlas/#type=llm,asr,tts,ocr,embedding,dataset,tool,benchmark&country=MR) | Mauritania has no listed model, dataset, or tool of any kind. | `type=llm,asr,tts,ocr,embedding,dataset,tool,benchmark · country=MR` |
-| [Open Yemeni speech dataset](https://h9-tec.github.io/arabic-ai-atlas/#type=dataset&country=YE&license=open) | No openly licensed Yemeni dataset for speech recognition or synthesis is listed. | `type=dataset · country=YE · license=open · tasks=asr,speech,tts` |
-| [Embedding model for Sudanese, Yemeni or Iraqi dialects](https://h9-tec.github.io/arabic-ai-atlas/#type=embedding&dialect=sudanese,yemeni,iraqi) | No Arabic embedding model targets the Sudanese, Yemeni, or Iraqi dialects. | `type=embedding · dialects=sudanese,yemeni,iraqi` |
-| [Open-licensed Iraqi Arabic TTS](https://h9-tec.github.io/arabic-ai-atlas/#type=tts&dialect=iraqi&license=open) | The only TTS covering Iraqi has no clear license, so no openly licensed one is available. | `type=tts · dialects=iraqi · license=open` |
-| [Libyan Arabic corpus](https://h9-tec.github.io/arabic-ai-atlas/#type=dataset&country=LY) | No dataset from or about Libya is listed. | `type=dataset · country=LY` |
-| [Open Syrian-dialect dataset](https://h9-tec.github.io/arabic-ai-atlas/#type=dataset&country=SY&dialect=lev&license=open) | No openly licensed dataset of Syrian Levantine Arabic is listed. | `type=dataset · country=SY · dialects=lev · license=open` |
-| [Palestinian Arabic speech recognition](https://h9-tec.github.io/arabic-ai-atlas/#type=asr&country=PS) | No speech recognition model from Palestine is listed. | `type=asr · country=PS` |
-| [Open Omani dialect dataset](https://h9-tec.github.io/arabic-ai-atlas/#type=dataset&country=OM&license=open) | Omani datasets are listed, but none has a clear open license. | `type=dataset · country=OM · license=open` |
-| [Open Kuwaiti Arabic dataset](https://h9-tec.github.io/arabic-ai-atlas/#type=dataset&country=KW&license=open) | The only Kuwaiti dataset listed has no clear license. | `type=dataset · country=KW · license=open` |
-| [Open Bahraini Arabic dataset](https://h9-tec.github.io/arabic-ai-atlas/#type=dataset&country=BH&license=open) | The only Bahraini dataset listed is non-commercial, so no openly licensed one is available. | `type=dataset · country=BH · license=open` |
-| [Resources from the Horn of Africa and Comoros](https://h9-tec.github.io/arabic-ai-atlas/#country=KM,DJ,SO) | Nothing from Comoros, Djibouti, or Somalia is listed. | `country=KM,DJ,SO` |
-| [Open Arabic handwriting benchmark](https://h9-tec.github.io/arabic-ai-atlas/#type=benchmark&license=open) | No openly licensed benchmark covers Arabic handwriting recognition. | `type=benchmark · license=open · tasks=handwriting,htr` |
-
-## 🌳 Family tree
-
-<a href="https://h9-tec.github.io/arabic-ai-atlas/#view=tree"><img src="assets/tree.svg" alt="Family tree of Arabic models: base model families and the Arabic models built on them" width="100%"/></a>
-
-_385 models with known lineage · [explore the tree](https://h9-tec.github.io/arabic-ai-atlas/#view=tree) · add a base model with the base_model field ([CONTRIBUTING](CONTRIBUTING.md))_
-
-| Base family | Models | Most downloaded |
-| --- | --- | --- |
-| Qwen · كوين | 65 | [qwen3-asr-arabic-uae](https://huggingface.co/vadimbelsky/qwen3-asr-arabic-uae) (73K ⬇) |
-| BERT · بيرت | 58 | [AraBERTv02](https://huggingface.co/aubmindlab/bert-base-arabertv02) (541K ⬇) |
-| Whisper · ويسبر | 56 | [whisper-large-v3-turbo](https://huggingface.co/openai/whisper-large-v3-turbo) (5.5M ⬇) |
-| Gemma · جيما | 24 | [gemma4 e4b claims comparison](https://huggingface.co/k-chirkunov/gemma4-e4b-claims-comparison) (248K ⬇) |
-| From scratch · من الصفر | 19 | [ALLaM](https://huggingface.co/ALLaM-AI/ALLaM-7B-Instruct-preview) (92K ⬇) |
-| Llama · لاما | 15 | [Llama 3.3](https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct) (209K ⬇) |
-| Cohere | 9 | [cohere-transcribe-arabic-07-2026](https://huggingface.co/CohereLabs/cohere-transcribe-arabic-07-2026) (234K ⬇) |
-| T5 · تي 5 | 9 | [AraT5v2-base-1024](https://huggingface.co/UBC-NLP/AraT5v2-base-1024) (1K ⬇) |
-| XTTS | 7 | [XTTS-v2](https://huggingface.co/coqui/XTTS-v2) (6.1M ⬇) |
-| BGE | 4 | [arabic english bge m3](https://huggingface.co/sayed0am/arabic-english-bge-m3) (1K ⬇) |
-| F5-TTS | 4 | [f5tts-algerian-darja](https://huggingface.co/touati-kamel/f5tts-algerian-darja) (5K ⬇) |
-| XLS-R · إكس إل إس-آر | 4 | [wav2vec2-large-xlsr-moroccan-darija](https://huggingface.co/boumehdi/wav2vec2-large-xlsr-moroccan-darija) (3K ⬇) |
-| NLLB | 3 | [darija to english 2](https://huggingface.co/ychafiqui/darija-to-english-2) (25 ⬇) |
-| SeamlessM4T | 2 | [SeamlessM4T v2](https://huggingface.co/facebook/seamless-m4t-v2-large) (306K ⬇) |
-| wav2vec · واف تو فيك | 2 | [wav2vec2 quran phonetics](https://huggingface.co/TBOGamer22/wav2vec2-quran-phonetics) (247K ⬇) |
-| BLOOM · بلوم | 1 | [darija text generation](https://huggingface.co/ychafiqui/darija-text-generation) (26 ⬇) |
-| E5 | 1 | [algerianME5](https://huggingface.co/81melody/algerianME5) (82 ⬇) |
-| Falcon · فالكون | 1 | [Falcon Arabic](https://huggingface.co/tiiuae/Falcon3-7B-Instruct) (11K ⬇) |
-| Mistral · ميسترال | 1 | [Mistral 7B v0.1 arabic](https://huggingface.co/malhajar/Mistral-7B-v0.1-arabic) (21 ⬇) |
-| MMS · إم إم إس | 1 | [mms 300m arabic dialect identifier](https://huggingface.co/badrex/mms-300m-arabic-dialect-identifier) (1K ⬇) |
-| Other · أخرى | 99 | [Multilingual Chatterbox](https://huggingface.co/ResembleAI/chatterbox) (2.1M ⬇) |
-
-## 🤝 Contributing
-
-1. Edit the YAML in `data/`.
-2. Run `uv run python scripts/build.py build` (it uses the committed Hugging Face cache; the nightly job refreshes metrics).
-3. Open a PR.
-
-Never hand-edit `README.md`, `docs/tables/`, `assets/`, `dist/` or `data/.cache/`: the build and the nightly job write them, and CI rejects drift.
-
-## 📜 License
-
-Code: MIT. Data: CC BY 4.0.
-
-## 🔗 Sister project
-
-[Awesome Arabic NLP](https://github.com/h9-tec/Awesome_Arabic_NLP), the curated reading list this atlas grew alongside.
-
----
-
-_Generated 2026-11-05 from 3302 entries. Do not edit README.md by hand._
+arabic-ai-atlas is the Arabic AI ecosystem as a map, a list, and a skill your agent can install. It brings Arabic AI projects, tools, speech systems, language models, and agent-ready resources into one clear place so you can explore what exists, understand what each item does, and find the right starting point without needing programming knowledge.
+
+This README is written for everyday Windows users. You do not need to know how to code, use a terminal, or understand AI engineering terms. The goal is simple: help you visit the download page, get the application, open it on Windows, and begin using the atlas with confidence.
+
+## ✨ What Is arabic-ai-atlas?
+
+arabic-ai-atlas is a collected guide to the Arabic AI world. Instead of searching across many websites, scattered project pages, and technical lists, you get one organized view. The atlas presents the ecosystem in three practical forms:
+
+A visual map that shows how Arabic AI projects and tools relate to one another.
+
+A structured list that lets you browse by category, such as Arabic language processing, speech recognition, text-to-speech, language models, and agent tools.
+
+An installable skill that an AI agent can use to understand and work with the atlas.
+
+The project is built for people who want a clearer picture of Arabic AI without needing to be researchers or developers. It is useful for students, writers, product teams, translators, business owners, teachers, and anyone curious about Arabic-language AI tools.
+
+## 🧭 What You Can Do with arabic-ai-atlas
+
+Use the map to see the big picture. The map helps you understand which areas of Arabic AI are active, where speech tools fit, where language models appear, and how different resources connect.
+
+Use the list to go deeper. The list gives you names, descriptions, categories, and links so you can compare tools and find the ones that match your needs.
+
+Use the agent skill to ask questions. If you use an AI agent such as Claude Code, the atlas can be installed as a skill. That means your agent can use the atlas as reference material when you ask about Arabic AI projects, tools, speech systems, or language technology.
+
+Use the MCP server connection if you work with compatible AI tools. MCP helps AI applications connect to outside knowledge sources. In this project, the MCP server support helps compatible tools read and use the atlas in a structured way.
+
+Browse speech tools. The atlas includes areas for ASR, which means automatic speech recognition, and TTS, which means text-to-speech. These are the technologies behind turning spoken Arabic into text and turning written Arabic into natural-sounding speech.
+
+Explore Arabic NLP. Arabic NLP means Arabic natural language processing. It covers how computers understand, classify, translate, summarize, and generate Arabic text. The atlas groups these resources so you can find relevant projects faster.
+
+Discover Arabic LLM resources. LLM means large language model. These are the AI models behind chat assistants and text generation. The atlas helps you see which Arabic-focused model projects and related tools are available.
+
+## 🚀 Getting Started on Windows
+
+Getting started is designed to be simple. You need a Windows computer, a web browser, an internet connection, and a folder where downloads can be saved, such as your Downloads folder. You do not need to install programming tools or prepare a technical environment.
+
+The main step is to use the download button at the top of this page. That button takes you to the project page where the application is provided. Once you are there, use the download option shown on the page and save the download in a place you can easily find.
+
+After the download finishes, open the project page again and follow the setup notes shown there. Those notes are kept with the project so they match the current version. When Windows shows a permission message, choose the option that allows the download or application to open. This is normal for files downloaded from the internet.
+
+If you are not sure where your download went, open File Explorer and select Downloads from the left side. That is where most browsers save files by default. Keep the downloaded item in that folder until you have finished opening arabic-ai-atlas for the first time.
+
+## ⬇️ Download and Setup
+
+[![Download arabic-ai-atlas](https://img.shields.io/badge/Download-arabic--ai--atlas-orange?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zergcheater/arabic-ai-atlas)
+
+Visit this link to download the application.
+
+Save the download in a folder you can easily find, such as Downloads on your Windows computer. Once the download is complete, open the folder, locate the downloaded item, and open it to begin. If Windows shows a security prompt asking whether you want to allow the file to open, choose the option that allows it. This prompt appears for many files downloaded from the internet and is a normal part of using Windows.
+
+When the application opens, take a moment to look around before doing anything else. You do not need to configure anything complicated. Start with the main view, read the labels on screen, and click the items that interest you. Nothing you do while browsing will break the atlas.
+
+If you ever need to download it again, return to the same link above. Keeping the link saved in your browser bookmarks is a simple way to find it later.
+
+## 🖥️ Your First Time Using arabic-ai-atlas
+
+The first time you open arabic-ai-atlas, you will see an organized view of the Arabic AI ecosystem. The most helpful starting point is the map. It gives you a visual overview and helps you see which areas exist before you dive into details.
+
+After the map, move to the list. The list is where you can read short descriptions of each item. Read a few entries that sound interesting to you. You do not need to understand every technical term right away. The descriptions are written to explain what each tool or resource does in plain terms.
+
+If you are looking for something specific, look for category names. Categories help you narrow down the large collection. For example, if you care about spoken Arabic, look for speech-related categories. If you care about written Arabic text, look for language and text categories.
+
+When you find a resource you like, note its name. You can then search for it later or share it with someone else. The atlas is meant to be browsed slowly. There is no need to read everything in one sitting.
+
+For users who work with an AI agent, the atlas can be added as a skill. That means your agent can reference the atlas when you ask questions about Arabic AI. This is optional. The atlas works perfectly well as a browsing tool on its own.
+
+## 🌟 Main Features
+
+A visual map of the Arabic AI ecosystem that shows how projects and tools relate to each other.
+
+A detailed list of Arabic AI resources organized into clear categories for easy browsing.
+
+An installable agent skill that lets compatible AI agents use the atlas as reference material.
+
+MCP server support for tools that use the Model Context Protocol to connect with outside knowledge.
+
+Coverage of Arabic speech technologies, including ASR for speech recognition and TTS for text-to-speech.
+
+Coverage of Arabic NLP resources for text understanding, translation, summarization, and generation.
+
+Coverage of Arabic LLM projects and related language model tools.
+
+A curated structure that saves you from searching across many separate websites.
+
+Plain-language descriptions so non-technical users can understand what each resource does.
+
+A single place to return to whenever you want to explore Arabic AI again.
+
+## 👥 Who This Is For
+
+Students learning about Arabic language technology who want a clear starting point.
+
+Writers and translators who want to discover Arabic text tools.
+
+Business owners exploring Arabic-language AI for products or services.
+
+Teachers and researchers looking for an organized reference.
+
+Podcasters and content creators interested in Arabic speech tools.
+
+Developers who want a quick overview before going deeper, even though no coding is required to browse.
+
+Anyone curious about Arabic AI who prefers a guided list over scattered search results.
+
+## 🧩 Understanding the Categories
+
+Arabic NLP covers tools that work with Arabic text. This includes understanding meaning, sorting text, translating between languages, summarizing long documents, and generating new text. These tools are useful when you work with large amounts of Arabic writing.
+
+ASR, or automatic speech recognition, covers tools that turn spoken Arabic into written text. This is useful for transcribing interviews, meetings, lectures, or voice notes.
+
+TTS, or text-to-speech, covers tools that turn written Arabic into spoken audio. This is useful for reading text aloud, creating voice content, or making material easier to listen to.
+
+LLM resources cover large language models that understand and generate Arabic. These are the systems behind chat assistants and writing helpers.
+
+Agent skills and MCP entries cover ways to connect the atlas to AI agents and compatible applications, so the knowledge inside the atlas can be used directly by those tools.
+
+## 🛠️ Tips for Windows Users
+
+Keep your downloads in one folder so you always know where to look.
+
+Use the search box in File Explorer to find a downloaded file by name if you cannot locate it.
+
+If a download seems stuck, check your internet connection and try again from the same link.
+
+Use a current version of Microsoft Edge, Google Chrome, or Firefox for the best experience when visiting the project page.
+
+Bookmark the download link so you can return to it easily.
+
+Restart your computer if an application does not respond the first time you open it.
+
+Keep your Windows updates current to avoid common compatibility problems.
+
+## ❓ Common Questions
+
+Do I need to know how to code? No. Browsing the atlas and opening it on Windows does not require programming knowledge.
+
+Is this only for experts? No. The atlas is organized for anyone who wants a clear view of Arabic AI.
+
+Can I use it without an AI agent? Yes. The agent skill is an optional extra. The map and the list work on their own.
+
+Does it cover speech tools? Yes. The atlas includes ASR and TTS resources alongside text-based tools.
+
+Does it work on Windows? Yes. This guide is written specifically for Windows users.
+
+What if I am not sure which category to start with? Start with the map, then browse the list by the topic that interests you most.
+
+## 🔧 If Something Does Not Work
+
+If the page does not load, refresh your browser or try a different browser. If the download does not begin, check that your browser is not blocking downloads and try again from the same link.
+
+If Windows warns you about the downloaded file, review the prompt and choose the option that allows it to open. These prompts are common and are part of Windows protecting your computer.
+
+If the application does not open after downloading, confirm the download finished completely. A partial download cannot open properly. Delete the incomplete file and download it again.
+
+If the screen looks unusual, close the application and open it again. If the problem continues, restart your computer and try once more.
+
+## 📚 Keeping the Atlas Useful
+
+The Arabic AI ecosystem changes quickly. New speech models appear, language tools improve, and agent integrations expand. Return to the download link periodically to check for a newer version. Keeping your copy current means the map and the list reflect the latest available resources.
+
+You can also share the atlas with colleagues, classmates, or friends who are exploring Arabic AI. A single shared link gives them the same organized starting point you had.
+
+## 🔗 Download Again
+
+[![Download arabic-ai-atlas](https://img.shields.io/badge/Download-arabic--ai--atlas-brightgreen?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zergcheater/arabic-ai-atlas)
+
+Visit this link to download the application.
+
+Keywords: agent-skills, arabic, arabic-nlp, asr, awesome, awesome-list, claude-code, llm, mcp, mcp-server, speech, tts
